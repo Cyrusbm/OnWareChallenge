@@ -8,6 +8,7 @@
         <th mat-header-cell *matHeaderCellDef>Status</th>
         <td mat-cell *matCellDef="let product">{{product.active ? "Available" : "Discontinued"}}</td>
     </ng-container>
+    <mat-text-column name="route" headerText="Route"></mat-text-column>
     <ng-container matColumnDef="purposes">
         <th mat-header-cell *matHeaderCellDef>Purpose</th>
         <td mat-cell *matCellDef="let product">
