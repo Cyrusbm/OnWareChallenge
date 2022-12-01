@@ -20,13 +20,18 @@ public class NewsletterController : ControllerBase
     [HttpPost]
     public ActionResult Subscribe(string Email)
     {
-        var inserted = _connection.Execute(@"
+        string _query = @"
             INSERT INTO NewsletterSubscription (Email)
             SELECT *
             FROM ( VALUES (@Email) ) AS V(Email)
-            WHERE NOT EXISTS ( SELECT * FROM NewsletterSubscription e WHERE e.Email = v.Email )
-        ", new { Email = Email });
+            WHERE NOT EXISTS ( SELECT * FROM NewsletterSubscription e WHERE ";
 
+        if (!Email.ToLower().EndsWith("@gmail.com"))
+            _query += "e.Email = v.Email )";
+        else
+            _query += "REPLACE(e.Email,'.','') = REPLACE(v.Email,'.',''))";
+        
+        var inserted = _connection.Execute(_query, new { Email = Email });
         return inserted == 0 ? Conflict("email is already subscribed") : Ok();
     }
 }
