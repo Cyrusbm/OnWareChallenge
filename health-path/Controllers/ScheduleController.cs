@@ -23,10 +23,41 @@ public class ScheduleController : ControllerBase
     {
         var dbResults = ReadData();
 
-        var preparedResults = dbResults.Select((t) => {
-            t.Item1.Recurrences.Add(t.Item2);
-            return t.Item1;
+        // var preparedResults = dbResults.Select((t) => {
+        //     t.Item1.Recurrences.Add(t.Item2);
+        //     return t.Item1;
+        // });
+        
+        // First Solution
+        var preparedResults = dbResults.GroupBy(g=>g.Item1.Id)
+        .Select(x=> new ScheduleEvent {
+            Id = x.Key,
+            Name = x.ToList()[0].Item1.Name,
+            Description = x.ToList()[0].Item1.Description,
+            Recurrences = x.Select(r=>r.Item2).ToList()
         });
+
+        // Second Solution
+        // List<ScheduleEvent> preparedResults = new List<ScheduleEvent>();
+        // var groupedResults = dbResults.GroupBy(p => p.Item1.Id);
+
+        // foreach(var group in groupedResults)
+        // {
+        //     List<ScheduleEventRecurrence> _recurrences = new List<ScheduleEventRecurrence>();
+
+        //     foreach(var item in group)
+        //     {
+        //         _recurrences.Add(item.Item2);
+        //     }
+
+        //     preparedResults.Add(new ScheduleEvent(){
+        //         Id = group.Key,
+        //         Name = group.ToList()[0].Item1.Name,
+        //         Description = group.ToList()[0].Item1.Description,
+        //         Recurrences = _recurrences
+        //     });
+        // }
+        
 
         return Ok(preparedResults);
     }
